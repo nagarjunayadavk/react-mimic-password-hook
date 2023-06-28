@@ -6,6 +6,8 @@ type HTMLTextInputElement = HTMLInputElement | HTMLTextAreaElement
 type NextValueString = string & { kind: 'nextValue' }
 
 type Props<T extends HTMLTextInputElement> = {
+  /** defaultValue set by default */
+  readonly defaultValue?: string
   /** Masking symbol. **'•'** by default */
   readonly mask?: string
   /** Delay while entered symbol is visible in miliseconds. **1000** by default */
@@ -19,6 +21,7 @@ type Props<T extends HTMLTextInputElement> = {
 export type UseMimicPasswordProps<T extends HTMLTextInputElement> = Props<T>
 
 const defaults: Props<HTMLTextInputElement> = {
+  defaultValue: '',
   mask: '•',
   delay: 1000,
   mode: 'delayed',
@@ -34,6 +37,7 @@ export const useMimicPassword = <T extends HTMLTextInputElement>(
   props?: UseMimicPasswordProps<T>,
 ): UseMimicReturn<T> => {
   const {
+    defaultValue,
     mask,
     delay,
     mode,
@@ -54,6 +58,24 @@ export const useMimicPassword = <T extends HTMLTextInputElement>(
   const [value, setValue] = React.useState('')
   const [presentation, setPresentation] = React.useState('')
   const [futurePresentation, setFuturePresentation] = React.useState('')
+
+
+  // Set default vlue and Presentation value
+  React.useEffect(() => {
+    // Set default Presentation value
+    if (defaultValue.length > 0) {
+      console.log("default value entered", defaultValue);
+      let pass = "";
+      for (const element of defaultValue) {
+        pass += '*';
+      }
+      setValue(defaultValue);
+      setPresentation(pass);
+      setFuturePresentation(new Array(defaultValue.length + 1).join(mask));
+    }
+  }, [defaultValue])
+
+
 
   const onChange = React.useCallback((e: React.ChangeEvent<T>): NextValueString => {
     inputRef.current = e.target
@@ -93,6 +115,8 @@ export const useMimicPassword = <T extends HTMLTextInputElement>(
 
     return newValue as NextValueString
   }, [timer, delay, mask, presentation, value, cursorPos])
+
+
 
   // Restore cursor position once presentation has changed
   React.useEffect(() => {
