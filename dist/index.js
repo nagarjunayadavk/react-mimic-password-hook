@@ -7,18 +7,36 @@ exports.useMimicPassword = void 0;
 const react_1 = __importDefault(require("react"));
 const utils_1 = require("./utils");
 const defaults = {
+    defaultValue: '',
     mask: '•',
     delay: 1000,
     mode: 'delayed',
 };
 exports.useMimicPassword = (props) => {
-    const { mask, delay, mode, handleChange, } = react_1.default.useMemo(() => (Object.assign(Object.assign({}, defaults), props)), [props]);
+    const { defaultValue, mask, delay, mode, handleChange, } = react_1.default.useMemo(() => (Object.assign(Object.assign({}, defaults), props)), [props]);
+    if (mask.length !== 1) {
+        throw new Error('`mask` should be a string with only one symbol.');
+    }
     const timer = react_1.default.useRef();
     const cursorPos = react_1.default.useRef(0);
     const inputRef = react_1.default.useRef(null);
     const [value, setValue] = react_1.default.useState('');
     const [presentation, setPresentation] = react_1.default.useState('');
     const [futurePresentation, setFuturePresentation] = react_1.default.useState('');
+    // Set default vlue and Presentation value
+    react_1.default.useEffect(() => {
+        // Set default Presentation value
+        if (defaultValue.length > 0) {
+            console.log("default value entered", defaultValue);
+            let pass = "";
+            for (const element of defaultValue) {
+                pass += '*';
+            }
+            setValue(defaultValue);
+            setPresentation(pass);
+            setFuturePresentation(new Array(defaultValue.length + 1).join(mask));
+        }
+    }, [defaultValue]);
     const onChange = react_1.default.useCallback((e) => {
         inputRef.current = e.target;
         cursorPos.current = inputRef.current.selectionEnd || 0;
