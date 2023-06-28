@@ -4,6 +4,8 @@ declare type NextValueString = string & {
     kind: 'nextValue';
 };
 declare type Props<T extends HTMLTextInputElement> = {
+    /** defaultValue set by default */
+    readonly defaultValue?: string;
     /** Masking symbol. **'•'** by default */
     readonly mask?: string;
     /** Delay while entered symbol is visible in miliseconds. **1000** by default */
